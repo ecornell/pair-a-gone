@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#1a1a2e">
+    <title>Pair-a-Gone and On</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <header>
+            <h1>Pair-a-Gone and On</h1>
+            <div class="stats">
+                <div class="stat">
+                    <span class="stat-label">Score</span>
+                    <span class="stat-value" id="score">0</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Matches</span>
+                    <span class="stat-value" id="matches">0</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">High Score</span>
+                    <span class="stat-value" id="high-score">0</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="notification" id="notification"></div>
+
+        <div class="card-grid" id="card-grid"></div>
+
+        <div class="game-over-overlay" id="game-over">
+            <div class="game-over-content">
+                <h2>Game Over!</h2>
+                <p>Final Score: <span id="final-score">0</span></p>
+                <p id="new-high-score" class="hidden">New High Score!</p>
+                <button id="restart-btn">Play Again</button>
+            </div>
+        </div>
+
+        <footer>
+            <p>Match adjacent cards of the same type!</p>
+        </footer>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
