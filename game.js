@@ -40,6 +40,13 @@ const restartBtn = document.getElementById('restart-btn');
 // Audio context for sound effects
 let audioContext = null;
 let audioUnlocked = false;
+let soundEnabled = true;
+
+// Settings DOM elements
+const configBtn = document.getElementById('config-btn');
+const settingsOverlay = document.getElementById('settings-overlay');
+const soundToggle = document.getElementById('sound-toggle');
+const closeSettingsBtn = document.getElementById('close-settings');
 
 // Initialize and unlock audio context for mobile browsers (especially iOS Safari)
 function initAudio() {
@@ -97,7 +104,7 @@ setupAudioUnlock();
 
 // Sound effects using Web Audio API
 function playSound(type) {
-    if (!audioContext) return;
+    if (!audioContext || !soundEnabled) return;
 
     const oscillator = audioContext.createOscillator();
     const gainNode = audioContext.createGain();
@@ -554,6 +561,52 @@ restartBtn.addEventListener('click', () => {
     initGame();
 });
 
+// Settings functions
+function openSettings() {
+    settingsOverlay.classList.add('show');
+}
+
+function closeSettings() {
+    settingsOverlay.classList.remove('show');
+}
+
+function toggleSound() {
+    soundEnabled = !soundEnabled;
+    soundToggle.classList.toggle('active', soundEnabled);
+    saveSoundSetting();
+}
+
+function saveSoundSetting() {
+    try {
+        localStorage.setItem('pairAGoneSoundEnabled', soundEnabled.toString());
+    } catch (e) {
+        // localStorage not available
+    }
+}
+
+function loadSoundSetting() {
+    try {
+        const saved = localStorage.getItem('pairAGoneSoundEnabled');
+        if (saved !== null) {
+            soundEnabled = saved === 'true';
+        }
+        soundToggle.classList.toggle('active', soundEnabled);
+    } catch (e) {
+        // localStorage not available
+    }
+}
+
+// Settings event listeners
+configBtn.addEventListener('click', openSettings);
+closeSettingsBtn.addEventListener('click', closeSettings);
+soundToggle.addEventListener('click', toggleSound);
+settingsOverlay.addEventListener('click', (e) => {
+    if (e.target === settingsOverlay) {
+        closeSettings();
+    }
+});
+
 // Start the game
 loadHighScore();
+loadSoundSetting();
 initGame();
