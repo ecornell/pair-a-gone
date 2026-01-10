@@ -60,8 +60,17 @@
         </div>
 
         <footer>
-            <p>Match adjacent cards of the same type!</p>
+            <p>Match adjacent cards of the same type! <a href="#" id="share-link">Share</a></p>
         </footer>
+
+        <div class="share-overlay" id="share-overlay">
+            <div class="share-content">
+                <h2>Share Game</h2>
+                <img id="qr-code" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https%3A%2F%2Fecornell.github.io%2Fpair-a-gone%2Fsrc%2Findex.html" alt="QR Code" width="200" height="200">
+                <p class="share-url">https://ecornell.github.io/pair-a-gone/src/index.html</p>
+                <button class="close-share-btn" id="close-share">Close</button>
+            </div>
+        </div>
 
         <div class="settings-overlay" id="settings-overlay">
             <div class="settings-content">

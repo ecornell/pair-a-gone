@@ -754,6 +754,28 @@ settingsOverlay.addEventListener('click', (e) => {
     }
 });
 
+// Share functionality
+const shareLink = document.getElementById('share-link');
+const shareOverlay = document.getElementById('share-overlay');
+const closeShareBtn = document.getElementById('close-share');
+
+function openShare(e) {
+    e.preventDefault();
+    shareOverlay.classList.add('show');
+}
+
+function closeShare() {
+    shareOverlay.classList.remove('show');
+}
+
+shareLink.addEventListener('click', openShare);
+closeShareBtn.addEventListener('click', closeShare);
+shareOverlay.addEventListener('click', (e) => {
+    if (e.target === shareOverlay) {
+        closeShare();
+    }
+});
+
 // Start the game
 loadHighScore();
 loadSoundSetting();
