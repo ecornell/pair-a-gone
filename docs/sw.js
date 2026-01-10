@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pair-a-gone-v1';
+const CACHE_NAME = 'pair-a-gone-v2';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
@@ -30,12 +30,16 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   event.respondWith(
-    caches.match(event.request)
-      .then((cachedResponse) => {
-        if (cachedResponse) {
-          return cachedResponse;
+    fetch(event.request)
+      .then((response) => {
+        if (response.ok) {
+          const responseClone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseClone);
+          });
         }
-        return fetch(event.request);
+        return response;
       })
+      .catch(() => caches.match(event.request))
   );
 });
