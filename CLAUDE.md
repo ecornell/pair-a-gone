@@ -14,23 +14,23 @@
 
 ## Key Files
 
-- `index.html` - Main entry point, game UI structure
-- `game.js` - Core game logic (~760 lines): cards, matching, scoring, audio
-- `style.css` - Styling, animations, responsive design
-- `sw.js` - Service worker for offline caching
-- `manifest.json` - PWA manifest
+- `src/index.html` - Main entry point, game UI structure
+- `src/game.js` - Core game logic (~760 lines): cards, matching, scoring, audio
+- `src/style.css` - Styling, animations, responsive design
+- `src/sw.js` - Service worker for offline caching
+- `src/manifest.json` - PWA manifest
 
 ## Running the Project
 
-No build process required. Serve files with any static HTTP server:
+No build process required. Serve the `src` directory with any static HTTP server:
 
 ```bash
-npx http-server
+npx http-server src
 # or
-python -m http.server 8000
+cd src && python -m http.server 8000
 ```
 
-## Game Constants (game.js)
+## Game Constants (src/game.js)
 
 ```javascript
 GRID_COLS = 5, GRID_ROWS = 4  // 20 card grid
@@ -46,7 +46,7 @@ MULTIPLIER_DECAY_RATE = 0.075
 
 ## Architecture Notes
 
-- Game state managed in global variables in `game.js`
+- Game state managed in global variables in `src/game.js`
 - Sound effects generated procedurally via Web Audio API (no audio files)
 - Settings and high scores persist to localStorage
 - Mobile-optimized with touch handling and iOS audio context workarounds
