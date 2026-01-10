@@ -1,4 +1,4 @@
-# Pair-a-Gone and On
+# Pair-a-Gone
 
 A browser-based puzzle/matching card game. Match adjacent cards of the same type to score points, with a combo multiplier system rewarding consecutive matches.
 
