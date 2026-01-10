@@ -1,0 +1,18 @@
+{
+  "name": "Pair-a-Gone and On",
+  "short_name": "Pair-a-Gone",
+  "description": "Match adjacent cards of the same type in this fun puzzle game",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1a1a2e",
+  "theme_color": "#1a1a2e",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
