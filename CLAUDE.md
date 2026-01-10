@@ -14,23 +14,29 @@
 
 ## Key Files
 
-- `src/index.html` - Main entry point, game UI structure
-- `src/game.js` - Core game logic (~760 lines): cards, matching, scoring, audio
-- `src/style.css` - Styling, animations, responsive design
-- `src/sw.js` - Service worker for offline caching
-- `src/manifest.json` - PWA manifest
+- `docs/index.html` - Main entry point, game UI structure
+- `docs/game.js` - Core game logic (~660 lines): cards, matching, scoring, audio
+- `docs/style.css` - Styling, animations, responsive design
+- `docs/sw.js` - Service worker for offline caching
+- `docs/manifest.json` - PWA manifest
+- `docs/favicon.svg` - App favicon
+- `docs/CNAME` - Custom domain configuration for GitHub Pages
 
-## Running the Project
+## Hosting
 
-No build process required. Serve the `src` directory with any static HTTP server:
+Hosted via GitHub Pages from the `docs/` directory at `pair-a-gone.pages.8bitmage.com`.
+
+## Running Locally
+
+No build process required. Serve the `docs` directory with any static HTTP server:
 
 ```bash
-npx http-server src
+npx http-server docs
 # or
-cd src && python -m http.server 8000
+cd docs && python -m http.server 8000
 ```
 
-## Game Constants (src/game.js)
+## Game Constants (docs/game.js)
 
 ```javascript
 GRID_COLS = 5, GRID_ROWS = 4  // 20 card grid
@@ -46,7 +52,7 @@ MULTIPLIER_DECAY_RATE = 0.075
 
 ## Architecture Notes
 
-- Game state managed in global variables in `src/game.js`
+- Game state managed in global variables in `docs/game.js`
 - Sound effects generated procedurally via Web Audio API (no audio files)
 - Settings and high scores persist to localStorage
 - Mobile-optimized with touch handling and iOS audio context workarounds
