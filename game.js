@@ -39,13 +39,61 @@ const restartBtn = document.getElementById('restart-btn');
 
 // Audio context for sound effects
 let audioContext = null;
+let audioUnlocked = false;
 
-// Initialize audio context on first user interaction
+// Initialize and unlock audio context for mobile browsers (especially iOS Safari)
 function initAudio() {
-    if (!audioContext) {
-        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    return new Promise((resolve) => {
+        if (!audioContext) {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+
+        // Resume audio context if suspended (required for mobile browsers)
+        if (audioContext.state === 'suspended') {
+            audioContext.resume().then(() => {
+                unlockWithOscillator();
+                resolve();
+            });
+        } else {
+            unlockWithOscillator();
+            resolve();
+        }
+    });
+}
+
+// Play a brief oscillator to unlock audio on iOS
+function unlockWithOscillator() {
+    if (audioUnlocked) return;
+
+    try {
+        // iOS needs an actual oscillator played, not just a silent buffer
+        const osc = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        gain.gain.setValueAtTime(0.001, audioContext.currentTime); // Nearly silent
+        osc.connect(gain);
+        gain.connect(audioContext.destination);
+        osc.start(0);
+        osc.stop(audioContext.currentTime + 0.001);
+        audioUnlocked = true;
+        console.log('Audio unlocked, context state:', audioContext.state);
+    } catch (e) {
+        console.log('Audio unlock failed:', e);
     }
 }
+
+// Unlock audio on first touch/click anywhere on the page
+function setupAudioUnlock() {
+    const events = ['touchstart', 'touchend', 'mousedown', 'keydown'];
+
+    const unlockAudio = () => {
+        initAudio();
+        events.forEach(e => document.removeEventListener(e, unlockAudio, true));
+    };
+
+    events.forEach(e => document.addEventListener(e, unlockAudio, { once: true, capture: true }));
+}
+
+setupAudioUnlock();
 
 // Sound effects using Web Audio API
 function playSound(type) {

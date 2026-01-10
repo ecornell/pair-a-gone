@@ -28,6 +28,7 @@ body {
 }
 
 .game-container {
+    position: relative;
     max-width: 800px;
     width: 100%;
     height: 100%;
@@ -298,37 +299,84 @@ footer {
     }
 }
 
-/* Landscape orientation - prioritize game grid */
-@media (max-height: 500px) {
-    header {
-        margin-bottom: 5px;
+/* Landscape orientation on phones - move info to left side */
+@media (orientation: landscape) and (max-height: 500px) {
+    body {
+        padding: 5px;
+        padding-left: max(5px, env(safe-area-inset-left));
+        padding-right: max(5px, env(safe-area-inset-right));
     }
 
-    h1 {
-        font-size: 1.2rem;
-        margin-bottom: 5px;
-    }
-
-    .stats {
+    .game-container {
+        flex-direction: row;
+        max-width: 100%;
         gap: 10px;
     }
 
+    header {
+        flex-direction: column;
+        justify-content: center;
+        margin-bottom: 0;
+        min-width: 100px;
+        max-width: 140px;
+        flex-shrink: 0;
+    }
+
+    h1 {
+        font-size: 1rem;
+        margin-bottom: 10px;
+        line-height: 1.2;
+    }
+
+    .stats {
+        flex-direction: column;
+        gap: 8px;
+    }
+
     .stat {
-        padding: 4px 10px;
+        padding: 5px 10px;
     }
 
     .stat-label {
-        font-size: 0.65rem;
+        font-size: 0.6rem;
     }
 
     .stat-value {
-        font-size: 1rem;
+        font-size: 0.95rem;
     }
 
     .notification {
-        height: 20px;
-        line-height: 20px;
-        font-size: 0.85rem;
+        position: absolute;
+        top: 5px;
+        left: 50%;
+        transform: translateX(-50%);
+        height: auto;
+        padding: 3px 10px;
+        font-size: 0.8rem;
+        background: rgba(0, 0, 0, 0.7);
+        border-radius: 5px;
+        z-index: 10;
+    }
+
+    .card-grid {
+        flex: 1;
+        min-height: 0;
+        max-width: none;
+        max-height: 100%;
+        height: 100%;
+        margin: 0;
+        padding: min(8px, 1.5vw);
+        aspect-ratio: auto;
+        grid-template-rows: repeat(4, 1fr);
+        align-content: stretch;
+        overflow: hidden;
+    }
+
+    .card {
+        font-size: clamp(1.5rem, 12vh, 3rem);
+        aspect-ratio: auto;
+        width: 100%;
+        height: 100%;
     }
 
     footer {
