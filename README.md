@@ -4,7 +4,7 @@ A browser-based puzzle/matching card game. Match adjacent cards of the same type
 
 ## Play
 
-**[Play Online](https://ecornell.github.io/pair-a-gone/src/index.html)**
+**[Play Online](https://pair-a-gone.pages.8bitmage.com/)**
 
 Or serve locally with any static HTTP server:
 
