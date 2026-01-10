@@ -20,7 +20,7 @@ Then open `http://localhost:8080` (or `8000` for Python) in your browser.
 
 - Match adjacent cards (including diagonals) to score points
 - Combo multiplier system rewards consecutive matches (up to 5x)
-- 10 unlockable card types with Mario-themed characters
+- 10 unlockable card types with themed characters
 - Progressive difficulty - new card types unlock as you play
 - Procedurally generated sound effects
 - PWA support for offline play
