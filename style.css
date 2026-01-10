@@ -79,6 +79,93 @@ h1 {
     font-weight: bold;
 }
 
+/* Multiplier-specific styles */
+.multiplier-stat {
+    position: relative;
+}
+
+.multiplier-bar {
+    width: 100%;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 2px;
+    margin-top: 5px;
+    overflow: hidden;
+}
+
+.multiplier-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #4caf50, #ffd700, #ff6b6b);
+    border-radius: 2px;
+    transition: width 0.1s ease;
+    width: 0%;
+}
+
+/* Multiplier tier colors */
+.multiplier-good {
+    color: #4caf50 !important;
+}
+
+.multiplier-epic {
+    color: #9c27b0 !important;
+    text-shadow: 0 0 10px rgba(156, 39, 176, 0.5);
+}
+
+.multiplier-legendary {
+    color: #ffd700 !important;
+    text-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
+    animation: legendaryPulse 0.5s ease infinite alternate;
+}
+
+@keyframes legendaryPulse {
+    from { transform: scale(1); }
+    to { transform: scale(1.1); }
+}
+
+/* Multiplier pop-up feedback */
+.multiplier-pop {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 2rem;
+    font-weight: bold;
+    color: #4caf50;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 50;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    transition: all 0.3s ease;
+}
+
+.multiplier-pop.show {
+    opacity: 1;
+    animation: popUp 0.8s ease forwards;
+}
+
+.multiplier-pop.negative {
+    color: #ff6b6b;
+}
+
+@keyframes popUp {
+    0% {
+        transform: translate(-50%, -50%) scale(0.5);
+        opacity: 0;
+    }
+    20% {
+        transform: translate(-50%, -50%) scale(1.2);
+        opacity: 1;
+    }
+    80% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(-50%, -60%) scale(1);
+        opacity: 0;
+    }
+}
+
 .notification {
     height: 30px;
     line-height: 30px;
@@ -527,5 +614,14 @@ footer {
     .config-btn {
         padding: 5px 10px;
         font-size: 1.1rem;
+    }
+
+    .multiplier-bar {
+        height: 3px;
+        margin-top: 3px;
+    }
+
+    .multiplier-pop {
+        font-size: 1.5rem;
     }
 }

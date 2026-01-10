@@ -18,6 +18,13 @@ const GRID_ROWS = 4;
 const TOTAL_SLOTS = GRID_COLS * GRID_ROWS; // 20 slots
 const POINTS_PER_MATCH = 10;
 
+// Multiplier constants
+const MULTIPLIER_START = 1.0;
+const MULTIPLIER_MAX = 5.0;
+const MULTIPLIER_INCREMENT = 0.5;
+const MULTIPLIER_DECAY_RATE = 0.075;
+const MULTIPLIER_DECAY_INTERVAL = 100;
+
 // Game state
 let grid = []; // Array of card objects or null for empty slots
 let selectedIndex = null;
@@ -25,6 +32,12 @@ let score = 0;
 let matches = 0;
 let highScore = 0;
 let isProcessing = false;
+
+// Multiplier state
+let multiplier = MULTIPLIER_START;
+let multiplierDecayTimer = null;
+let comboCount = 0;
+let lastMatchTime = null;
 
 // DOM elements
 const cardGrid = document.getElementById('card-grid');
@@ -36,6 +49,12 @@ const gameOverOverlay = document.getElementById('game-over');
 const finalScoreDisplay = document.getElementById('final-score');
 const newHighScoreMsg = document.getElementById('new-high-score');
 const restartBtn = document.getElementById('restart-btn');
+
+// Multiplier DOM elements
+const multiplierDisplay = document.getElementById('multiplier');
+const multiplierFill = document.getElementById('multiplier-fill');
+const comboDisplay = document.getElementById('combo');
+const multiplierPop = document.getElementById('multiplier-pop');
 
 // Audio context for sound effects
 let audioContext = null;
@@ -183,6 +202,29 @@ function playSound(type) {
             oscillator.stop(now + 0.5);
             break;
 
+        case 'combo':
+            // Rising pitch for combo increase
+            const baseFreq = 600 + (comboCount * 50);
+            oscillator.frequency.setValueAtTime(baseFreq, now);
+            oscillator.frequency.setValueAtTime(baseFreq + 100, now + 0.1);
+            oscillator.type = 'sine';
+            gainNode.gain.setValueAtTime(0.12, now);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+            oscillator.start(now);
+            oscillator.stop(now + 0.15);
+            break;
+
+        case 'comboLost':
+            // Descending tone for combo lost
+            oscillator.frequency.setValueAtTime(300, now);
+            oscillator.frequency.exponentialRampToValueAtTime(150, now + 0.3);
+            oscillator.type = 'sawtooth';
+            gainNode.gain.setValueAtTime(0.08, now);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+            oscillator.start(now);
+            oscillator.stop(now + 0.3);
+            break;
+
         case 'highscore':
             // Special fanfare for new high score
             const fanfare = [784, 988, 1175, 1568];
@@ -307,6 +349,7 @@ function handleCardClick(index) {
             // Valid match!
             isProcessing = true;
             playSound('match');
+            onMatchSuccess();
 
             // Mark cards for removal animation
             const elements = cardGrid.children;
@@ -324,6 +367,7 @@ function handleCardClick(index) {
         } else {
             // Invalid match
             playSound('invalid');
+            onMatchFailure();
 
             const elements = cardGrid.children;
             elements[selectedIndex].classList.add('invalid');
@@ -345,8 +389,9 @@ function removeCardsAndSlide(idx1, idx2) {
     grid[idx1] = null;
     grid[idx2] = null;
 
-    // Update score
-    score += POINTS_PER_MATCH;
+    // Update score with multiplier
+    const earnedPoints = calculateScore(POINTS_PER_MATCH);
+    score += earnedPoints;
     matches++;
     updateScore();
 
@@ -479,6 +524,88 @@ function updateScore() {
     }
 }
 
+// Multiplier functions
+function startMultiplierDecay() {
+    if (multiplierDecayTimer) return;
+
+    lastMatchTime = Date.now();
+    multiplierDecayTimer = setInterval(() => {
+        if (multiplier > MULTIPLIER_START) {
+            // Decay rate increases with combo: baseRate * (1 + combo * 0.1)
+            const decayMultiplier = 1 + (comboCount * 0.1);
+            const decay = MULTIPLIER_DECAY_RATE * decayMultiplier * (MULTIPLIER_DECAY_INTERVAL / 1000);
+            multiplier = Math.max(MULTIPLIER_START, multiplier - decay);
+            updateMultiplierDisplay();
+        }
+    }, MULTIPLIER_DECAY_INTERVAL);
+}
+
+function stopMultiplierDecay() {
+    if (multiplierDecayTimer) {
+        clearInterval(multiplierDecayTimer);
+        multiplierDecayTimer = null;
+    }
+}
+
+function onMatchSuccess() {
+    comboCount++;
+    multiplier = Math.min(MULTIPLIER_MAX, multiplier + MULTIPLIER_INCREMENT);
+    lastMatchTime = Date.now();
+
+    // Visual and audio feedback for multiplier increase
+    if (comboCount > 1) {
+        showMultiplierPop('+' + MULTIPLIER_INCREMENT.toFixed(1) + 'x');
+        playSound('combo');
+    }
+    updateMultiplierDisplay();
+
+    // Start decay if not already running
+    startMultiplierDecay();
+}
+
+function onMatchFailure() {
+    // Reset multiplier on failed match
+    if (multiplier > MULTIPLIER_START || comboCount > 0) {
+        showMultiplierPop('Combo Lost!', 'negative');
+        playSound('comboLost');
+    }
+    multiplier = MULTIPLIER_START;
+    comboCount = 0;
+    updateMultiplierDisplay();
+}
+
+function calculateScore(basePoints) {
+    return Math.round(basePoints * multiplier);
+}
+
+function updateMultiplierDisplay() {
+    multiplierDisplay.textContent = multiplier.toFixed(1) + 'x';
+    comboDisplay.textContent = comboCount;
+
+    // Update progress bar (0% at 1.0x, 100% at max)
+    const progress = ((multiplier - MULTIPLIER_START) / (MULTIPLIER_MAX - MULTIPLIER_START)) * 100;
+    multiplierFill.style.width = progress + '%';
+
+    // Color coding based on multiplier level
+    multiplierDisplay.classList.remove('multiplier-good', 'multiplier-epic', 'multiplier-legendary');
+    if (multiplier >= 4.0) {
+        multiplierDisplay.classList.add('multiplier-legendary');
+    } else if (multiplier >= 3.0) {
+        multiplierDisplay.classList.add('multiplier-epic');
+    } else if (multiplier >= 2.0) {
+        multiplierDisplay.classList.add('multiplier-good');
+    }
+}
+
+function showMultiplierPop(text, type = 'positive') {
+    multiplierPop.textContent = text;
+    multiplierPop.className = 'multiplier-pop show ' + type;
+
+    setTimeout(() => {
+        multiplierPop.classList.remove('show');
+    }, 800);
+}
+
 // Show notification
 function showNotification(message) {
     notification.textContent = message;
@@ -492,6 +619,7 @@ function showNotification(message) {
 // End the game
 function endGame() {
     isProcessing = false;
+    stopMultiplierDecay();
     playSound('gameover');
 
     finalScoreDisplay.textContent = score;
@@ -547,6 +675,13 @@ function initGame() {
     selectedIndex = null;
     isProcessing = false;
     grid = [];
+
+    // Reset multiplier state
+    multiplier = MULTIPLIER_START;
+    comboCount = 0;
+    lastMatchTime = null;
+    stopMultiplierDecay();
+    updateMultiplierDisplay();
 
     scoreDisplay.textContent = score;
     matchesDisplay.textContent = matches;
