@@ -47,6 +47,7 @@ const configBtn = document.getElementById('config-btn');
 const settingsOverlay = document.getElementById('settings-overlay');
 const soundToggle = document.getElementById('sound-toggle');
 const closeSettingsBtn = document.getElementById('close-settings');
+const resetHighScoreBtn = document.getElementById('reset-highscore');
 
 // Initialize and unlock audio context for mobile browsers (especially iOS Safari)
 function initAudio() {
@@ -528,6 +529,17 @@ function loadHighScore() {
     }
 }
 
+// Reset high score
+function resetHighScore() {
+    highScore = 0;
+    highScoreDisplay.textContent = highScore;
+    try {
+        localStorage.removeItem('pairAGoneHighScore');
+    } catch (e) {
+        // localStorage not available
+    }
+}
+
 // Initialize/reset game
 function initGame() {
     score = 0;
@@ -600,6 +612,7 @@ function loadSoundSetting() {
 configBtn.addEventListener('click', openSettings);
 closeSettingsBtn.addEventListener('click', closeSettings);
 soundToggle.addEventListener('click', toggleSound);
+resetHighScoreBtn.addEventListener('click', resetHighScore);
 settingsOverlay.addEventListener('click', (e) => {
     if (e.target === settingsOverlay) {
         closeSettings();
