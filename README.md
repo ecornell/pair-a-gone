@@ -4,7 +4,9 @@ A browser-based puzzle/matching card game. Match adjacent cards of the same type
 
 ## Play
 
-No build process required. Serve the `src` directory with any static HTTP server:
+**[Play Online](https://ecornell.github.io/pair-a-gone/src/index.html)**
+
+Or serve locally with any static HTTP server:
 
 ```bash
 npx http-server src
