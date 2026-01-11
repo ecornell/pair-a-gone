@@ -400,6 +400,7 @@ function handleCardClick(index) {
 
             // Clear selection before match animation
             updateCardSelection(selectedIndex, false);
+            updateCardSelection(index, false);
 
             // Mark cards for removal animation
             const elements = cardGrid.children;
@@ -423,10 +424,14 @@ function handleCardClick(index) {
             elements[selectedIndex].classList.add('invalid');
             elements[index].classList.add('invalid');
 
+            // Capture indices by value to avoid reference issues
+            const prevSelectedIndex = selectedIndex;
+            const prevIndex = index;
+
             setTimeout(() => {
-                elements[selectedIndex].classList.remove('invalid');
-                elements[index].classList.remove('invalid');
-                updateCardSelection(selectedIndex, false);
+                elements[prevSelectedIndex].classList.remove('invalid');
+                elements[prevIndex].classList.remove('invalid');
+                updateCardSelection(prevSelectedIndex, false);
                 selectedIndex = null;
             }, 300);
         }
