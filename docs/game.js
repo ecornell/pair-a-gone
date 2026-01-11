@@ -392,6 +392,14 @@ function handleCardClick(index) {
         const card1 = grid[selectedIndex];
         const card2 = grid[index];
 
+        // Defensive check: ensure both cards still exist
+        if (!card1 || !card2) {
+            // One of the cards is missing, clear selection
+            updateCardSelection(selectedIndex, false);
+            selectedIndex = null;
+            return;
+        }
+
         if (card1.name === card2.name && areAdjacent(selectedIndex, index)) {
             // Valid match!
             isProcessing = true;
