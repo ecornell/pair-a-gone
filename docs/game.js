@@ -395,6 +395,10 @@ function handleCardClick(index) {
         if (card1.name === card2.name && areAdjacent(selectedIndex, index)) {
             // Valid match!
             isProcessing = true;
+
+            // Show second tile as selected for visual feedback
+            updateCardSelection(index, true);
+
             playSound('match');
             onMatchSuccess();
 
@@ -428,11 +432,13 @@ function handleCardClick(index) {
             const prevSelectedIndex = selectedIndex;
             const prevIndex = index;
 
+            // Clear selection immediately to prevent rapid clicks from causing issues
+            updateCardSelection(selectedIndex, false);
+            selectedIndex = null;
+
             setTimeout(() => {
                 elements[prevSelectedIndex].classList.remove('invalid');
                 elements[prevIndex].classList.remove('invalid');
-                updateCardSelection(prevSelectedIndex, false);
-                selectedIndex = null;
             }, 300);
         }
     }
