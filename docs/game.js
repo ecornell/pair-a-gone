@@ -398,14 +398,19 @@ function handleCardClick(index) {
             playSound('match');
             onMatchSuccess();
 
-            // Mark cards for removal animation
-            const elements = cardGrid.children;
-            elements[selectedIndex].classList.add('matched');
-            elements[index].classList.add('matched');
-
+            // Save indices and clear selection state first
             const idx1 = selectedIndex;
             const idx2 = index;
             selectedIndex = null;
+
+            // Clear selection from both cards before match animation
+            const elements = cardGrid.children;
+            elements[idx1].classList.remove('selected');
+            elements[idx2].classList.remove('selected');
+
+            // Mark cards for removal animation
+            elements[idx1].classList.add('matched');
+            elements[idx2].classList.add('matched');
 
             // After animation, remove cards and slide
             setTimeout(() => {
@@ -416,13 +421,17 @@ function handleCardClick(index) {
             playSound('invalid');
             onMatchFailure();
 
+            // Save indices for use in timeout
+            const idx1 = selectedIndex;
+            const idx2 = index;
+
             const elements = cardGrid.children;
-            elements[selectedIndex].classList.add('invalid');
-            elements[index].classList.add('invalid');
+            elements[idx1].classList.add('invalid');
+            elements[idx2].classList.add('invalid');
 
             setTimeout(() => {
-                elements[selectedIndex].classList.remove('invalid');
-                elements[index].classList.remove('invalid');
+                elements[idx1].classList.remove('invalid', 'selected');
+                elements[idx2].classList.remove('invalid');
                 selectedIndex = null;
             }, 300);
         }
