@@ -280,27 +280,74 @@ function generateCards(count) {
     return shuffleArray(cardList).slice(0, count);
 }
 
-// Render the grid
-function renderGrid() {
+// Delegated event handler for card grid
+function handleGridClick(event) {
+    const cardElement = event.target.closest('.card');
+    if (!cardElement) return;
+    const index = parseInt(cardElement.dataset.index, 10);
+    handleCardClick(index);
+}
+
+// Update selection state of a single card
+function updateCardSelection(index, selected) {
+    const cardElement = cardGrid.children[index];
+    if (!cardElement) return;
+
+    if (selected) {
+        cardElement.classList.add('selected');
+    } else {
+        cardElement.classList.remove('selected');
+    }
+}
+
+// Update content and state of a single card
+function updateCardContent(index) {
+    const cardElement = cardGrid.children[index];
+    if (!cardElement) return;
+
+    // Clear any animation classes
+    cardElement.classList.remove('matched', 'invalid', 'selected');
+
+    if (grid[index]) {
+        cardElement.textContent = grid[index].emoji;
+        cardElement.classList.remove('empty');
+    } else {
+        cardElement.textContent = '';
+        cardElement.classList.add('empty');
+    }
+}
+
+// Initialize grid with one-time DOM creation and event delegation
+function initializeGrid() {
     cardGrid.innerHTML = '';
 
+    // Create all 20 card elements
     for (let i = 0; i < TOTAL_SLOTS; i++) {
         const cardElement = document.createElement('div');
         cardElement.className = 'card';
         cardElement.dataset.index = i;
-
-        if (grid[i]) {
-            cardElement.textContent = grid[i].emoji;
-            cardElement.addEventListener('click', () => handleCardClick(i));
-
-            if (i === selectedIndex) {
-                cardElement.classList.add('selected');
-            }
-        } else {
-            cardElement.classList.add('empty');
-        }
-
         cardGrid.appendChild(cardElement);
+    }
+
+    // Attach single delegated listener
+    cardGrid.addEventListener('click', handleGridClick);
+
+    // Populate with initial content
+    for (let i = 0; i < TOTAL_SLOTS; i++) {
+        updateCardContent(i);
+    }
+}
+
+// Render the grid (refactored to use selective updates)
+function renderGrid() {
+    // Update all card contents
+    for (let i = 0; i < TOTAL_SLOTS; i++) {
+        updateCardContent(i);
+    }
+
+    // Update selection state
+    for (let i = 0; i < TOTAL_SLOTS; i++) {
+        updateCardSelection(i, i === selectedIndex);
     }
 }
 
@@ -335,11 +382,11 @@ function handleCardClick(index) {
         // First card selection
         selectedIndex = index;
         playSound('select');
-        renderGrid();
+        updateCardSelection(index, true);
     } else if (selectedIndex === index) {
         // Clicking same card - deselect
+        updateCardSelection(selectedIndex, false);
         selectedIndex = null;
-        renderGrid();
     } else {
         // Second card selection
         const card1 = grid[selectedIndex];
@@ -377,7 +424,6 @@ function handleCardClick(index) {
                 elements[selectedIndex].classList.remove('invalid');
                 elements[index].classList.remove('invalid');
                 selectedIndex = null;
-                renderGrid();
             }, 300);
         }
     }
@@ -400,12 +446,27 @@ function removeCardsAndSlide(idx1, idx2) {
 
     playSound('slide');
 
+    // After sliding, update all cards since positions changed
+    renderGrid();
+
     setTimeout(() => {
+        // Track which slots are empty before filling
+        const slotsToUpdate = [];
+        for (let i = 0; i < TOTAL_SLOTS; i++) {
+            if (grid[i] === null) {
+                slotsToUpdate.push(i);
+            }
+        }
+
         // Fill empty spaces with new random tiles
         fillEmptySpaces();
 
+        // Update only the slots that were filled
+        for (const index of slotsToUpdate) {
+            updateCardContent(index);
+        }
+
         playSound('deal');
-        renderGrid();
 
         // Check if there are valid moves
         setTimeout(() => {
@@ -694,7 +755,7 @@ function initGame() {
         grid[i] = initialCards[i] || null;
     }
 
-    renderGrid();
+    initializeGrid();
 
     // Ensure there's at least one valid move
     if (!hasValidMoves()) {
