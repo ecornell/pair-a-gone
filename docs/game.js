@@ -428,11 +428,13 @@ function handleCardClick(index) {
             const prevSelectedIndex = selectedIndex;
             const prevIndex = index;
 
+            // Clear selection immediately to prevent rapid clicks from causing issues
+            updateCardSelection(selectedIndex, false);
+            selectedIndex = null;
+
             setTimeout(() => {
                 elements[prevSelectedIndex].classList.remove('invalid');
                 elements[prevIndex].classList.remove('invalid');
-                updateCardSelection(prevSelectedIndex, false);
-                selectedIndex = null;
             }, 300);
         }
     }
