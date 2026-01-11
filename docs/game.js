@@ -389,20 +389,14 @@ function handleCardClick(index) {
         selectedIndex = null;
     } else {
         // Second card selection
+        // Set isProcessing immediately to prevent rapid click interference
+        isProcessing = true;
+
         const card1 = grid[selectedIndex];
         const card2 = grid[index];
 
-        // Defensive check: ensure both cards still exist
-        if (!card1 || !card2) {
-            // One of the cards is missing, clear selection
-            updateCardSelection(selectedIndex, false);
-            selectedIndex = null;
-            return;
-        }
-
         if (card1.name === card2.name && areAdjacent(selectedIndex, index)) {
             // Valid match!
-            isProcessing = true;
 
             // Show second tile as selected for visual feedback
             updateCardSelection(index, true);
@@ -447,6 +441,7 @@ function handleCardClick(index) {
             setTimeout(() => {
                 elements[prevSelectedIndex].classList.remove('invalid');
                 elements[prevIndex].classList.remove('invalid');
+                isProcessing = false;
             }, 300);
         }
     }
