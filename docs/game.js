@@ -395,6 +395,10 @@ function handleCardClick(index) {
         if (card1.name === card2.name && areAdjacent(selectedIndex, index)) {
             // Valid match!
             isProcessing = true;
+
+            // Show second tile as selected for visual feedback
+            updateCardSelection(index, true);
+
             playSound('match');
             onMatchSuccess();
 
